@@ -15,10 +15,11 @@ import icd #This library allows me to work with ICD codes and comorbidities easi
 #NOTE: To import icd, you may need to install the package by typing the following 
 #into the IPython console: pip install icd
 from sklearn.linear_model import LogisticRegression#This module will allow me to easily perform a logistic regression
+from sklearn import metrics# import the metrics class to evaluate the model
 import matplotlib.pyplot as plt #This library allows me to easily plot data
 
 #Import the csv file
-data=pd.read_csv('C:/Users/amckee/Documents/USNaWR_CodingAssessment/USN_claims_test_data.csv')
+data=pd.read_csv('G:/My Drive/Job Applications/Software Engineering Industry/Take-Home Assessments/USNaWR_CodingAssessment/Take-Home_Medical_Data_Assessment/USN_claims_test_data.csv')
 
 #Get some basic info on the layout of the dataset
 print(data.head)
@@ -196,9 +197,13 @@ model = LogisticRegression(solver='lbfgs', multi_class='multinomial',random_stat
 x2=np.array([risky_pop['patientId'],risky_pop['age'],risky_pop['systolic'],risky_pop['Num_of_Comorbidities']]).reshape(-1,4)
 
 #Now I will run the trained logistic regression model on the risky_pop subset (those admitted for CABG surgery)
-results=model.predict_proba(x2)
+results=model.predict(x2)
+
+cnf_matrix = metrics.confusion_matrix(risky_pop['patientId'], results)
+cnf_matrix
 
 #results[:,1] gives me each patient's likelihood of readmission. 
 #Below, I will find the mean of these likelihoods to get an overall likelihood of readmission in this population.
-prob_readmitted=np.mean(results[:,1])
+prob_results=model.predict_proba(x2)
+prob_readmitted=np.mean(prob_results[:,1])
 print('For Task 4, I ran a logistic model and found that the likelihood of a patient admitted for CABG surgery to be readmitted within 30 days was ' + str(prob_readmitted) + '.')
